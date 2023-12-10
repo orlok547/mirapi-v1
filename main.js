@@ -85,7 +85,7 @@ const fetchElements = (page)=>{
 			tempDiv.innerHTML = `
 				<p><strong>Name</strong>: <a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></p>
 				<p><strong>transportID</strong>: ${element.transportID}</p>
-				<p><strong>Price</strong>: <img src="/assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
+				<p><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
 				<p><strong>Class</strong>: ${element.class}</p>
 				<p><strong>Level</strong>: ${element.lv}</p>
 				<p><strong>Status</strong>:</p>
