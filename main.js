@@ -1,0 +1,112 @@
+var coso;
+let page = 1;
+const wrapperList = document.querySelector('#wrapper-list');
+const btnFetch = document.querySelector('#btn-fetch');
+
+const fetchElements = (page)=>{
+	// let urlTarget = 'https://webapi.mir4global.com/nft/lists?listType=sale&class=0&levMin=0&levMax=0&powerMin=0&powerMax=0&priceMin=0&priceMax=0&sort=latest&page=1&languageCode=en';
+	let urlTarget = `https://webapi.mir4global.com/nft/lists?listType=sale&class=0&levMin=0&levMax=0&powerMin=0&powerMax=0&priceMin=0&priceMax=0&sort=latest&page=${page}&languageCode=en`;
+	
+	fetch(urlTarget)
+	.then((res)=>{
+		if (!res.ok) return console.error('fetch failed with status code ', res.status);
+
+		return res.json();
+	})
+	.then((res)=>{
+		console.log('data fetched!');
+		// console.log('res.data: ', res.data);
+
+		// coso = res.data;
+		let list = res.data.lists;
+
+		for (let i = 0; i < list.length; i++) {
+			const element = list[i];
+			let tempDiv = document.createElement('div');
+			// let statsList = '<ul>';
+			let statsList = '';
+			let skillsList = document.createElement('ul');
+			let spiritsList = document.createElement('ul');
+			
+			tempDiv.setAttribute('class', 'list-element');
+			tempDiv.setAttribute('data-transport-id', element.transportID);
+
+			/* element.stat.forEach(stat=>{
+				statsList += `<li>${stat.statName}: ${stat.statValue}</li>`;
+			});					
+			statsList += '</ul>'; */
+
+			fetch(`https://webapi.mir4global.com/nft/character/skills?transportID=${element.transportID}&class=${element.class}&languageCode=en`)
+			// fetch(`https://webapi.mir4global.com/nft/character/inven?transportID=${element.transportID}&languageCode=en`)
+			// fetch(`https://webapi.mir4global.com/nft/character/spirit?transportID=${element.transportID}&languageCode=en`)
+			.then((res)=>{
+				return res.json();
+			})
+			.then((res)=>{
+				// console.log(`data skills: `, res.data);
+				// coso = res.data;
+
+				let elmDiv = document.querySelector(`[data-transport-id="${element.transportID}"]`);
+				elmDiv.innerHTML += '<p><strong>Skills</strong>: </p>';
+
+				for (let i = 0; i < res.data.length; i++) {
+					const skill = res.data[i];
+					let tempLi = document.createElement('li');
+					// skillsList += `<li>${skill.skillName}: ${skill.skillLevel}</li>`;
+					tempLi.innerHTML = `<span class="skill-name">${skill.skillName}</span>: <span class="skill-value">${skill.skillLevel}</span>`;
+					skillsList.append(tempLi);
+				}
+				// skillsList += '</ul>';
+				elmDiv.append(skillsList);
+			});
+
+			/* fetch(`https://webapi.mir4global.com/nft/character/spirit?transportID=${element.transportID}&languageCode=en`)
+			.then((res)=>{
+				return res.json();
+			})
+			.then((res)=>{
+				console.log(`data spirits: `, res.data);
+				coso = res.data;
+
+				let elmDiv = document.querySelector(`[data-transport-id="${element.transportID}"]`);
+				elmDiv.innerHTML += '<p><strong>Spirit</strong>: </p>';
+
+				for (let i = 0; i < res.data.length; i++) {
+					const spirit = res.data[i];
+					let tempLi = document.createElement('li');
+					tempLi.innerHTML = `<span class="spirit-name">${spirit.equip}</span>: <span class="spirit-value">${spirit.inven}</span>`;
+					spiritsList.append(tempLi);
+				}
+				elmDiv.append(spiritsList);
+			}); */
+
+			// CREATE NFT (character) CARD ELEMENT
+			// console.log('element: ', element);
+			tempDiv.innerHTML = `
+				<p><strong>Name</strong>: <a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></p>
+				<p><strong>transportID</strong>: ${element.transportID}</p>
+				<p><strong>Price</strong>: <img src="/assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
+				<p><strong>Class</strong>: ${element.class}</p>
+				<p><strong>Level</strong>: ${element.lv}</p>
+				<p><strong>Status</strong>:</p>
+				${statsList}
+			`;
+
+			wrapperList.append(tempDiv);
+		}
+
+		btnFetch.classList.remove('loading');
+	});
+};
+
+btnFetch.addEventListener('click', (e)=>{
+	e.preventDefault();
+
+	page++;
+	fetchElements(page);
+	btnFetch.classList.add('loading');
+});
+
+window.addEventListener('load', ()=>{
+	fetchElements(page);
+});
