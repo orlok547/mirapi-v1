@@ -40,6 +40,7 @@
 					// let statsList = '<ul>';
 					let statsList = '';
 					let skillsList = document.createElement('ul');
+					let spiritsList = document.createElement('ul');
 					
 					tempDiv.setAttribute('class', 'list-element');
 					tempDiv.setAttribute('data-transport-id', element.transportID);
@@ -56,7 +57,7 @@
 						return res.json();
 					})
 					.then((res)=>{
-						console.log(`data: `, res.data);
+						// console.log(`data skills: `, res.data);
 						// coso = res.data;
 
 						let elmDiv = document.querySelector(`[data-transport-id="${element.transportID}"]`);
@@ -73,6 +74,27 @@
 						elmDiv.append(skillsList);
 					});
 
+					/* fetch(`https://webapi.mir4global.com/nft/character/spirit?transportID=${element.transportID}&languageCode=en`)
+					.then((res)=>{
+						return res.json();
+					})
+					.then((res)=>{
+						console.log(`data spirits: `, res.data);
+						coso = res.data;
+
+						let elmDiv = document.querySelector(`[data-transport-id="${element.transportID}"]`);
+						elmDiv.innerHTML += '<p><strong>Spirit</strong>: </p>';
+
+						for (let i = 0; i < res.data.length; i++) {
+							const spirit = res.data[i];
+							let tempLi = document.createElement('li');
+							tempLi.innerHTML = `<span class="spirit-name">${spirit.equip}</span>: <span class="spirit-value">${spirit.inven}</span>`;
+							spiritsList.append(tempLi);
+						}
+						elmDiv.append(spiritsList);
+					}); */
+
+					// CREATE NFT (character) CARD ELEMENT
 					// console.log('element: ', element);
 					tempDiv.innerHTML = `
 						<p><strong>Name</strong>: <a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></p>
