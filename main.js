@@ -1,9 +1,18 @@
 var coso;
 let page = 1;
+const fetchAllToggle = document.querySelector('#fetch-all-toggle');
 const wrapperList = document.querySelector('#wrapper-list');
 const btnFetch = document.querySelector('#btn-fetch');
 
-const fetchElements = (page)=>{
+/**
+ * fetch all characters
+ * @param {number} page - Current page to fetch.
+ * @param {boolean} getAll - Ignores fetch limit. Get all characters at once.
+*/
+
+const fetchElements = (page = 1, getAll = false)=>{
+	getAll = fetchAllToggle.checked;
+
 	// let urlTarget = 'https://webapi.mir4global.com/nft/lists?listType=sale&class=0&levMin=0&levMax=0&powerMin=0&powerMax=0&priceMin=0&priceMax=0&sort=latest&page=1&languageCode=en';
 	let urlTarget = `https://webapi.mir4global.com/nft/lists?listType=sale&class=0&levMin=0&levMax=0&powerMin=0&powerMax=0&priceMin=0&priceMax=0&sort=latest&page=${page}&languageCode=en`;
 	
@@ -17,24 +26,26 @@ const fetchElements = (page)=>{
 		console.log('data fetched!');
 		// console.log('res.data: ', res.data);
 
-		// coso = res.data;
+		if (res.data.more == 0) return;
+
+		coso = res.data;
 		let list = res.data.lists;
 
 		for (let i = 0; i < list.length; i++) {
 			const element = list[i];
-			let tempDiv = document.createElement('div');
-			// let statsList = '<ul>';
-			let statsList = '';
+			let tempCharacterDiv = document.createElement('div');
+			let statsList = document.createElement('ul');
 			let skillsList = document.createElement('ul');
 			let spiritsList = document.createElement('ul');
 			
-			tempDiv.setAttribute('class', 'list-element');
-			tempDiv.setAttribute('data-transport-id', element.transportID);
+			tempCharacterDiv.setAttribute('class', 'list-element');
+			tempCharacterDiv.setAttribute('data-transport-id', element.transportID);
 
-			/* element.stat.forEach(stat=>{
-				statsList += `<li>${stat.statName}: ${stat.statValue}</li>`;
-			});					
-			statsList += '</ul>'; */
+			element.stat.forEach(stat=>{
+				let tempLi = document.createElement('li');
+				tempLi.innerHTML = `<span class="stat-name">${stat.statName}</span>: <span class="stat-value"><strong>${stat.statValue}</strong></span>`;
+				statsList.append(tempLi);
+			});
 
 			fetch(`https://webapi.mir4global.com/nft/character/skills?transportID=${element.transportID}&class=${element.class}&languageCode=en`)
 			// fetch(`https://webapi.mir4global.com/nft/character/inven?transportID=${element.transportID}&languageCode=en`)
@@ -82,20 +93,22 @@ const fetchElements = (page)=>{
 
 			// CREATE NFT (character) CARD ELEMENT
 			// console.log('element: ', element);
-			tempDiv.innerHTML = `
+			tempCharacterDiv.innerHTML = `
 				<p><strong>Name</strong>: <a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></p>
 				<p><strong>transportID</strong>: ${element.transportID}</p>
 				<p><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
 				<p><strong>Class</strong>: ${element.class}</p>
 				<p><strong>Level</strong>: ${element.lv}</p>
 				<p><strong>Status</strong>:</p>
-				${statsList}
 			`;
+			tempCharacterDiv.append(statsList);
 
-			wrapperList.append(tempDiv);
+			wrapperList.append(tempCharacterDiv);
 		}
 
 		btnFetch.classList.remove('loading');
+
+		if (getAll) fetchElements(++page);
 	});
 };
 

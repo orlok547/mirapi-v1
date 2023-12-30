@@ -20,8 +20,8 @@ strong {font-weight: bold;}
 	padding: 12px;
 	border: 1px solid darkcyan;
 }
-#wrapper-list .list-element p + p {
-	margin-top: 6px;
+#wrapper-list .list-element > * + * {
+	margin-top: 8px;
 }
 #wrapper-list .list-element ul {
 	padding-left: 10px;
@@ -36,9 +36,22 @@ strong {font-weight: bold;}
 	font-weight: bold;
 }
 
+label[for="fetch-all-toggle"] {
+	padding: 6px 8px;
+	position: sticky;
+	bottom: 5px;
+	left: 5px;
+	z-index: 1;
+	border: 1px solid #000;
+	border-radius: 6px;
+	background-color: #fff;
+}
+
 #btn-fetch {
 	padding: 15px;
-	position: relative;
+	position: sticky;
+	bottom: 5px;
+	left: 5px;
 	color: #fff;
 	overflow: hidden;
 	border-radius: 6px;
