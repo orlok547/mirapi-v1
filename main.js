@@ -17,7 +17,7 @@ const fetchAndAppendSkills = (transportID, characterClass)=>{
 		// console.log(`data skills: `, res.data);
 		// coso = res.data;
 
-		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"]`);
+		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
 		elmDiv.innerHTML += '<p><strong>Skills</strong>: </p>';
 
 		for (let i = 0; i < res.data.length; i++) {
@@ -43,7 +43,7 @@ const fetchAndAppendSpirits = (transportID)=>{
 		// console.log(`data spirits: `, res.data);
 		// coso = res.data;
 
-		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"]`);
+		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
 		elmDiv.innerHTML += '<p><strong>Spirits</strong>: </p>';
 		
 		for (const categoryKey in res.data.equip) {
@@ -83,7 +83,7 @@ const fetchAndAppendCodex = (transportID)=>{
 		// console.log(`data codex: `, res.data);
 		// coso = res.data;
 
-		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"]`);
+		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
 		elmDiv.innerHTML += '<p><strong>Codex</strong>: </p>';
 
 		for (const codexKey in res.data) {
@@ -100,6 +100,38 @@ const fetchAndAppendCodex = (transportID)=>{
 			codexList.append(tempLi);
 		}
 		elmDiv.append(codexList);
+	});
+};
+
+const fetchAndAppendTraining = (transportID)=>{
+	let trainingList = document.createElement('ul');
+
+	fetch(`https://webapi.mir4global.com/nft/character/training?transportID=${transportID}&languageCode=en`)
+	.then((res)=>{
+		return res.json();
+	})
+	.then((res)=>{
+		// console.log(`data training: `, res.data);
+		coso = res.data;
+
+		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
+		elmDiv.innerHTML += '<p><strong>Training</strong>: </p>';
+
+		for (const trainingKey in res.data) {
+			console.log(`trainingKey:`, trainingKey);
+			
+			const training = res.data[trainingKey];
+		
+			let tempLi = document.createElement('li');
+			
+			console.log(`training:`, training);
+			
+			if (training.forceName) {
+				tempLi.innerHTML = `<span class="training-name"><strong>${training.forceName}</strong><br>Force Level: ${training.forceLevel}<br>forceIdx: ${training.forceIdx}<br>-------</span>`;
+			}
+			trainingList.append(tempLi);
+		}
+		elmDiv.append(trainingList);
 	});
 };
 
@@ -133,14 +165,9 @@ const fetchElements = (page = 1, getAll = false)=>{
 			let tempCharacterDiv = document.createElement('div');
 			let statsList = document.createElement('ul');
 			
-			tempCharacterDiv.setAttribute('class', 'list-element');
+			// tempCharacterDiv.setAttribute('class', 'list-element');
+			tempCharacterDiv.setAttribute('class', 'list-element card');
 			tempCharacterDiv.setAttribute('data-transport-id', element.transportID);
-
-			/* element.stat.forEach(stat=>{
-				let tempLi = document.createElement('li');
-				tempLi.innerHTML = `<span class="stat-name">${stat.statName}</span>: <span class="stat-value"><strong>${stat.statValue}</strong></span>`;
-				statsList.append(tempLi);
-			}); */
 
 			// fetchAndAppendSkills(element.transportID, element.class);
 
@@ -148,14 +175,18 @@ const fetchElements = (page = 1, getAll = false)=>{
 
 			fetchAndAppendCodex(element.transportID);
 
+			fetchAndAppendTraining(element.transportID);
+
 			// CREATE NFT (character) CARD ELEMENT
 			// console.log('element: ', element);
 			tempCharacterDiv.innerHTML = `
-				<p><strong>Name</strong>: <a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></p>
-				<p><strong>transportID</strong>: ${element.transportID}</p>
-				<p><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
-				<p><strong>Class</strong>: ${element.class}</p>
-				<p><strong>Level</strong>: ${element.lv}</p>
+				<div class="card-body">
+					<h5 class="card-title"><a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></h5>
+					<p class="card-text"><strong>transportID</strong>: ${element.transportID}</p>
+					<p class="card-text"><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
+					<p class="card-text"><strong>Class</strong>: ${element.class}</p>
+					<p class="card-text"><strong>Level</strong>: ${element.lv}</p>
+				</div>
 			`;
 			tempCharacterDiv.append(statsList);
 
