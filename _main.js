@@ -6,6 +6,7 @@ const btnFetch = document.querySelector('#btn-fetch');
 
 const fetchAndAppendSkills = (transportID, characterClass)=>{
 	let skillsList = document.createElement('ul');
+	skillsList.setAttribute('class', ' char-skills-list');
 
 	fetch(`https://webapi.mir4global.com/nft/character/skills?transportID=${transportID}&class=${characterClass}&languageCode=en`)
 	// fetch(`https://webapi.mir4global.com/nft/character/inven?transportID=${transportID}&languageCode=en`)
@@ -34,6 +35,7 @@ const fetchAndAppendSkills = (transportID, characterClass)=>{
 
 const fetchAndAppendSpirits = (transportID)=>{
 	let spiritsList = document.createElement('ul');
+	spiritsList.setAttribute('class', ' char-spirits-list');
 
 	fetch(`https://webapi.mir4global.com/nft/character/spirit?transportID=${transportID}&languageCode=en`)
 	.then((res)=>{
@@ -74,7 +76,7 @@ const fetchAndAppendSpirits = (transportID)=>{
 
 const fetchAndAppendCodex = (transportID)=>{
 	let codexList = document.createElement('ul');
-	let codexTotal = document.createElement('p');
+	codexList.setAttribute('class', ' char-codex-list');
 
 	fetch(`https://webapi.mir4global.com/nft/character/codex?transportID=${transportID}&languageCode=en`)
 	.then((res)=>{
@@ -84,37 +86,29 @@ const fetchAndAppendCodex = (transportID)=>{
 		// console.log(`data codex: `, res.data);
 		// coso = res.data;
 
-		let completeTotal = 0;
 		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
-		// elmDiv.innerHTML += '<p><strong>Codex</strong>: </p>';
+		elmDiv.innerHTML += '<p><strong>Codex</strong>: </p>';
 
 		for (const codexKey in res.data) {
 			// console.log(`codexKey:`, codexKey);
 			
 			const codex = res.data[codexKey];
-
-			completeTotal = completeTotal + parseInt(codex.completed);
 		
 			let tempLi = document.createElement('li');
 			
-			/* console.log(`codexKey:`, codexKey);
-			console.log(`codex:`, codex); */
+			/* console.log(`codexDataKey:`, codexDataKey);
+			console.log(`codexDataValue:`, codexDataValue); */
 			
 			tempLi.innerHTML = `<span class="codex-name"><strong>${codex.codexName}</strong><br>Completed: ${codex.completed}<br>In Progress: ${codex.inprogress}<br>Total Count: ${codex.totalCount}<br>-------</span>`;
 			codexList.append(tempLi);
 		}
-
-		codexTotal.innerHTML = `<strong>Codex total</strong>: ${completeTotal}`;
-		elmDiv.append(codexTotal);
 		elmDiv.append(codexList);
-
-		fetchAndAppendSpirits(transportID);
 	});
 };
 
 const fetchAndAppendTraining = (transportID)=>{
 	let trainingList = document.createElement('ul');
-	let constitutionData = document.createElement('p');
+	trainingList.setAttribute('class', ' char-training-list');
 
 	fetch(`https://webapi.mir4global.com/nft/character/training?transportID=${transportID}&languageCode=en`)
 	.then((res)=>{
@@ -125,11 +119,6 @@ const fetchAndAppendTraining = (transportID)=>{
 		coso = res.data;
 
 		let elmDiv = document.querySelector(`[data-transport-id="${transportID}"] .card-body`);
-
-		constitutionData.innerHTML = `<strong>${res.data['consitutionName']}</strong>: ${res.data['consitutionLevel']}`;
-
-		elmDiv.append(constitutionData);
-
 		elmDiv.innerHTML += '<p><strong>Training</strong>: </p>';
 
 		for (const trainingKey in res.data) {
@@ -140,16 +129,14 @@ const fetchAndAppendTraining = (transportID)=>{
 			let tempLi = document.createElement('li');
 			
 			// console.log(`training:`, training);
-			// debugger
 			
 			if (training.forceName) {
-				tempLi.innerHTML = `<span class="training-name"><strong>${training.forceName}</strong><br>Force Level: ${training.forceLevel}<br>-------</span>`;
+				tempLi.innerHTML = `<span class="training-name"><strong>${training.forceName}</strong><br>Force Level: ${training.forceLevel}<br>forceIdx: ${training.forceIdx}<br>-------</span>`;
 			}
 			trainingList.append(tempLi);
 		}
-
 		elmDiv.append(trainingList);
-		
+
 		fetchAndAppendCodex(transportID);
 	});
 };
@@ -161,15 +148,6 @@ const fetchAndAppendTraining = (transportID)=>{
 */
 const fetchElements = (page = 1, getAll = false)=>{
 	getAll = fetchAllToggle.checked;
-	
-	const classesNames = {
-		1: "Warrior",
-		2: "Sorcerer",
-		3: "Taoist",
-		4: "Arbalist",
-		5: "Lancer",
-		6: "Darkist",
-	};
 
 	let urlTarget = `https://webapi.mir4global.com/nft/lists?listType=sale&class=0&levMin=0&levMax=0&powerMin=0&powerMax=0&priceMin=0&priceMax=0&sort=latest&page=${page}&languageCode=en`;
 	
@@ -192,6 +170,7 @@ const fetchElements = (page = 1, getAll = false)=>{
 			const element = list[i];
 			let tempCharacterDiv = document.createElement('div');
 			let statsList = document.createElement('ul');
+			statsList.setAttribute('class', ' char-stats-list');
 			
 			// tempCharacterDiv.setAttribute('class', 'list-element');
 			tempCharacterDiv.setAttribute('class', 'list-element card');
@@ -208,11 +187,12 @@ const fetchElements = (page = 1, getAll = false)=>{
 			// CREATE NFT (character) CARD ELEMENT
 			// console.log('element: ', element);
 			tempCharacterDiv.innerHTML = `
-				<div class="card-body" data-transport-id="${element.transportID}">
-					<h5 class="card-title"><a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></h5>
-					<p class="card-text"><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
-					<p class="card-text"><strong>Class</strong>: ${classesNames[element.class]}</p>
-					<p class="card-text"><strong>Level</strong>: ${element.lv}</p>
+				<div class="card-body">
+					<h5 class="card-title char-name"><a href="https://xdraco.com/nft/trade/${element.seq}">${element.characterName}</a></h5>
+					<p class="card-text char-transport-id"><strong>transportID</strong>: ${element.transportID}</p>
+					<p class="card-text char-price"><strong>Price</strong>: <img src="assets/ico-wemix-credit-logo.webp" width="15"> <strong style="text-decoration: underline;">${element.price}</strong></p>
+					<p class="card-text char-class"><strong>Class</strong>: ${element.class}</p>
+					<p class="card-text char-level"><strong>Level</strong>: ${element.lv}</p>
 				</div>
 			`;
 			tempCharacterDiv.append(statsList);
@@ -226,11 +206,19 @@ const fetchElements = (page = 1, getAll = false)=>{
 	});
 };
 
+/* const testCoso = async (page = 1)=>{
+	return await fetch('https://www.mir4collection.com:8080/api/player/filter', {
+		method: 'POST',
+		body: `{"characterName":"","worldName":"","characterIndex":"","level":"","powerScore":"","price":"","physAttack":"","spellAttack":"","physDefense":"","spellDefense":"","codexLength":"","epicSpiritNames":[],"training":[],"inven":[],"legendarySpiritLength":"","legendaryUnsealSpiritLength":"","epicItemLength":"","epicItemLengthTradable":false,"legendaryItemLength":"","legendaryItemLengthTradable":false,"epicSkillTomeLength":"","epicSkillTomeLengthTradable":false,"legendarySkillTomeLength":"","legendarySkillTomeLengthTradable":false,"requiredSkills":[],"requiredItems":[],"requiredEquipItems":[],"spiritNamesUseOr":"false","sort":{"prop":"newest","level":-1},"page":${page},"stats":[],"methodIsSoldPlayers":false}`,
+	});
+}; */
+
 btnFetch.addEventListener('click', (e)=>{
 	e.preventDefault();
 
-	page++;
-	fetchElements(page);
+	// page++;
+	// fetchElements(page);
+	fetchElements(++page);
 	btnFetch.classList.add('loading');
 });
 
